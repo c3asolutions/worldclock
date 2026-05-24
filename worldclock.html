@@ -1,0 +1,195 @@
+<div id="global-clock-bar">
+  <div class="clock-title">GLOBAL OPERATIONS TIME REFERENCE</div>
+
+  <div class="clock-carousel">
+    <div id="clock-track"></div>
+  </div>
+</div>
+
+<style>
+  #global-clock-bar {
+    background: rgba(8, 12, 10, 0.96);
+    color: #d6f5c9;
+    font-family: Consolas, "Courier New", monospace;
+    border: 1px solid rgba(140, 255, 154, 0.35);
+    padding: 14px 16px;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 15px;
+    letter-spacing: 1px;
+    backdrop-filter: blur(3px);
+    box-shadow: 0 0 12px rgba(0,255,120,.08);
+    overflow: hidden;
+    height: auto !important;
+    min-height: unset !important;
+  }
+
+  .clock-title {
+    color: #8cff9a;
+    font-weight: 700;
+    margin: 0 0 14px 0;
+    padding: 0;
+    text-align: center;
+    font-size: 24px;
+    letter-spacing: 6px;
+    line-height: 1.1;
+  }
+
+  .clock-carousel {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    margin: 0;
+    padding: 0;
+  }
+
+  #clock-track {
+    display: flex;
+    width: max-content;
+    gap: 55px;
+    animation: tickerScroll 145s linear infinite;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+  }
+
+  .clock-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 165px;
+    text-align: center;
+    flex-shrink: 0;
+    line-height: 1.1;
+  }
+
+  .zone {
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 15px;
+    margin-bottom: 5px;
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+
+  .date {
+    color: #c8d6c0;
+    font-size: 13px;
+    margin-bottom: 6px;
+    line-height: 1;
+  }
+
+  .time {
+    color: #7cff6b;
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+
+  .zulu .zone,
+  .zulu .time {
+    color: #7cff6b;
+  }
+
+  @keyframes tickerScroll {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (max-width: 768px) {
+    #global-clock-bar {
+      padding: 10px;
+    }
+
+    .clock-title {
+      font-size: 16px;
+      letter-spacing: 3px;
+      margin-bottom: 10px;
+    }
+
+    #clock-track {
+      gap: 35px;
+      animation-duration: 115s;
+    }
+
+    .clock-block {
+      min-width: 135px;
+    }
+
+    .zone {
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .date {
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
+
+    .time {
+      font-size: 19px;
+    }
+  }
+</style>
+
+<script>
+  const zones = [
+    { label: "ZULU", tz: "UTC", zulu: true },
+    { label: "HAWAII", tz: "Pacific/Honolulu" },
+    { label: "ALASKA", tz: "America/Anchorage" },
+    { label: "PACIFIC", tz: "America/Los_Angeles" },
+    { label: "MOUNTAIN", tz: "America/Denver" },
+    { label: "CENTRAL", tz: "America/Chicago" },
+    { label: "EASTERN / ATLANTIC", tz: "America/New_York" },
+    { label: "UK", tz: "Europe/London" },
+    { label: "GERMANY / ITALY / POLAND", tz: "Europe/Berlin" },
+    { label: "QATAR / KUWAIT / BAHRAIN", tz: "Asia/Qatar" },
+    { label: "KOREA / JAPAN", tz: "Asia/Tokyo" },
+    { label: "GUAM", tz: "Pacific/Guam" },
+    { label: "AUSTRALIA", tz: "Australia/Darwin" }
+  ];
+
+  function updateClocks() {
+    const track = document.getElementById("clock-track");
+    let html = "";
+
+    zones.forEach(zone => {
+      const now = new Date();
+
+      const time = new Intl.DateTimeFormat("en-GB", {
+        timeZone: zone.tz,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      }).format(now);
+
+      const date = new Intl.DateTimeFormat("en-GB", {
+        timeZone: zone.tz,
+        weekday: "short",
+        day: "2-digit",
+        month: "short"
+      }).format(now).toUpperCase();
+
+      html += `
+        <div class="clock-block ${zone.zulu ? "zulu" : ""}">
+          <div class="zone">${zone.label}</div>
+          <div class="date">${date}</div>
+          <div class="time">${time}</div>
+        </div>
+      `;
+    });
+
+    track.innerHTML = html + html + html;
+  }
+
+  updateClocks();
+  setInterval(updateClocks, 1000);
+</script>
